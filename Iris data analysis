@@ -1,0 +1,179 @@
+[Problem 1] Data acquisition
+
+from sklearn.datasets import load_iris
+iris= load_iris()
+
+import pandas as pd
+import numpy as np
+
+# Store features matrix in X
+X = pd.DataFrame(data= np.c_[iris['data']],
+                  columns= iris['feature_names'])
+X
+     
+#Store target vector in
+y =  pd.DataFrame(data= np.c_[iris['target']],
+                  columns=['Species'])
+y
+
+[Problem 2] Combining data
+
+df = pd.concat([X, y], axis=1)
+df
+
+[Problem 3] Checking the data
+
+#Display the 4th sample from the beginning and see what each feature is like
+df.head()
+
+df.head()
+     
+df.info()
+#Output the total number of samples for each label
+df.describe()
+#Check if there is a missing value in the feature quantity
+df.isnull().any()#no missing values
+df.sum()
+df.value_counts()
+
+
+
+[Problem 4] Examining the iris dataset itself
+
+df.Species
+iris.target_names
+df['Species'].value_counts()
+
+
+
+[Problem 5] Extracting the required data
+
+
+# method 1 using iloc()
+df.iloc[:,1:2].head()
+# METHOD 2 USING LOC()
+df.loc[:,['sepal width (cm)']].head()
+# method 3 using local index position 
+df[['sepal width (cm)']].head()
+# Extract the 50th to 99th data
+df.iloc[50:100, :]
+# Extract the50th to 99th data of the petal_length column
+df.loc[50:99, ['petal length (cm)']]
+#Extract data with a petal_width value of 0.2
+df[df['petal width (cm)'] == 0.2].head()
+df.loc[df['petal width (cm)'] == 0.2,['petal width (cm)']].head()
+
+
+[Problem 6] Creating a diagram
+
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+a = df['Species'].value_counts()
+species = a.index
+count = a.values
+colors = ['orange', 'red', 'brown']
+#explore = (0,0.2,0)
+plt.pie(count, labels=species,colors = colors, autopct = '%1.1f%%')
+plt.xlabel('species')
+plt.axis('equal')
+plt.show()
+# visualizing the distribution of data for each label using a box plot
+df.boxplot()
+df.boxplot(['sepal length (cm)'])
+df.boxplot(['sepal width (cm)'])
+df.boxplot(['petal length (cm)'])
+df.boxplot(['petal width (cm)'])
+# visualize the distribution of data for each label using a violin plot
+import seaborn as sns
+fig, ax = plt.subplots(figsize =(5, 3)) 
+sns.violinplot( ax = ax, y = df["sepal length (cm)"] )
+fig, ax = plt.subplots(figsize =(5, 3)) 
+sns.violinplot( ax = ax, y = df["sepal width (cm)"] )
+fig, ax = plt.subplots(figsize =(5, 3)) 
+sns.violinplot( ax = ax, y = df["petal length (cm)"] )
+fig, ax = plt.subplots(figsize =(5, 3)) 
+sns.violinplot( ax = ax, y = df["petal width (cm)"] )
+
+
+
+The difference between the boxplot and the violin plot
+
+    A violin plot is a mrthod of ploting numeric data. it is similar to box plot, with the addition of a rotated kernel density plot on each side.
+    Violin plot are more informative than a plain box plot.
+    Box plot only shows summary statistics such as mean, median and interquartile ranges. But violin plot shows the full distribution of the data.
+
+
+
+
+[Problem 7] Confirming the relationship between features
+
+
+df.plot(kind='scatter', x='sepal length (cm)', y='sepal width (cm)') 
+plt.show()
+df.plot(kind='scatter', x='petal length (cm)', y='petal width (cm)', color='blue') 
+plt.show()
+df.plot(kind='scatter', x='sepal width (cm)', y='petal length (cm)', color='red') 
+plt.show()
+df.plot(kind='scatter', x='sepal length (cm)', y='petal width (cm)', color='brown') 
+plt.show()
+df.plot(kind='scatter', x='sepal width (cm)', y='petal width (cm)', color='pink') 
+plt.show()
+df.plot(kind='scatter', x='sepal width (cm)', y='petal length (cm)', color='grey') 
+plt.show()
+df.plot(kind='scatter', x='sepal length (cm)', y='petal width (cm)', color='blue') 
+plt.show()
+print('Correlation:')
+df.corr()
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(3, 2, figsize=(12,12))
+index = 0
+for i in range(3):
+    for j in range(i+1,4):
+        ax1 = int(index/2)
+        ax2 = index % 2
+        axes[ax1][ax2].scatter(df[df.columns[i]], df[df.columns[j]], color='orange')
+        axes[ax1][ax2].set_xlabel(df.columns[i])
+        axes[ax1][ax2].set_ylabel(df.columns[j])
+        index = index + 1
+        
+df['sepal length (cm)'].corr(df['sepal width (cm)'])
+#Create a correlation coefficient matrix for 4 features
+df_features = df.iloc[:,:4]
+df_features
+corr_mat = df_features.corr()
+corr_mat
+#Make a heat map of the correlation coefficient matrix
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.heatmap(corr_mat)
+plt.show()
+
+
+
+
+[Problem 8] Explaining the results of visualized graphs and tables
+
+THE HEAT MAP
+
+    It is a square matrix – each row represents a variable, and all the columns represent the same variables as rows, hence the number of rows = number of columns.
+    Each cell in the grid represents the value of the correlation coefficient between two variables.
+    A value near to 0 (both positive or negative) indicates the absence of any correlation between the two variables, and hence those variables are independent of each other.
+    Each cell in the above matrix is also represented by shades of a color. Here darker shades of the color indicate smaller values while brighter shades correspond to larger values (near to 1).
+
+The boxplot
+
+    The boxplot shows the distribution of the data and spot the outliers effectively.
+
+    The first thing you might notice in the preceding diagram is a box that contains a horizontal line.
+
+    The box represents two inner quartiles where 50% of the data resides, and it ranges from the first quartile to the third quartile.
+
+    The horizontal line represents the median of the data.
+
+
+
+     
